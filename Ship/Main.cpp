@@ -12,9 +12,9 @@
 
 
 float computeAngle(float ax, float ay, float bx, float by);
-float itemInteract(bool item_find,Game game,sf::RectangleShape itemScreen,std::vector<std::shared_ptr<Capsula>>capsulas,
-    Nave& nave,bool& e_pressed,bool& right_pressed,bool& left_pressed,float& button_current_time,
-    float button_time,float button_decrease_time);
+float itemInteract(bool item_find,Game game,sf::RectangleShape itemScreen, sf::RectangleShape selectScreen, 
+    std::vector<std::shared_ptr<Capsula>>capsulas, Nave& nave,bool& e_pressed,bool& right_pressed,
+    bool& left_pressed,float& button_current_time,float button_time,float button_decrease_time);
 
 int main() {
 
@@ -52,7 +52,19 @@ int main() {
 
     sf::RectangleShape itemScreen(sf::Vector2f(1500, 1000));
     itemScreen.setFillColor(sf::Color(100, 100, 100, 200));
-    itemScreen.setOrigin(itemScreen.getSize() / 2.0f);
+    itemScreen.setOrigin(itemScreen.getSize() / 2.f);
+
+
+    // Criação do retângulo
+    sf::RectangleShape selectScreen(sf::Vector2f(750.f, 1000.f));
+    //selectScreen.setOrigin(selectScreen.getSize() / 2.f);
+
+    // Configuração da borda
+    selectScreen.setOutlineThickness(10.f);  // Espessura da borda
+    selectScreen.setOutlineColor(sf::Color::White);  // Cor da borda
+
+    // Deixar o preenchimento transparente
+    selectScreen.setFillColor(sf::Color::Transparent);
 
 
     std::vector<std::shared_ptr<Planeta>> planetas;
@@ -242,14 +254,14 @@ int main() {
 
 
 
-        game.window->draw(*nave.sprite);
-
         for (auto capsulaAtual : capsulas) {
             game.window->draw(*capsulaAtual->sprite);
             if (capsulaAtual->showButton) {
                 game.window->draw(*capsulaAtual->botao->sprite);
             }
         }
+
+        game.window->draw(*nave.sprite);
 
         if (pause) {
 
@@ -267,6 +279,7 @@ int main() {
                 item_find,
                 game,
                 itemScreen,
+                selectScreen,
                 capsulas,
                 nave,
                 e_pressed,                
@@ -277,6 +290,7 @@ int main() {
                 0.05);
         
         
+
         game.window->display();
         
 	}
@@ -295,6 +309,7 @@ float itemInteract(
     bool item_find,
     Game game,
     sf::RectangleShape itemScreen,
+    sf::RectangleShape selectScreen,
     std::vector<std::shared_ptr<Capsula>>capsulas,
     Nave& nave,  
     bool& e_pressed,
@@ -309,7 +324,9 @@ float itemInteract(
     if (item_find) {
         sf::Vector2f viewCenter = game.window->getView().getCenter();
         itemScreen.setPosition(viewCenter);
+        selectScreen.setPosition(itemScreen.getPosition().x - itemScreen.getSize().x/2, itemScreen.getPosition().y - itemScreen.getSize().y/2);
         game.window->draw(itemScreen);
+        game.window->draw(selectScreen);
 
         for (auto capsulaAtual : capsulas) {
             
@@ -378,8 +395,6 @@ float itemInteract(
                                 capsulaAtual->itens.at(i)->deselectItem();
                                 capsulaAtual->itens.at(capsulaAtual->itens.size()-1)->selectItem();
                             }
-
-                            
 
                             left_pressed = false;
                         }
