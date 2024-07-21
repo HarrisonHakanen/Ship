@@ -1,0 +1,9 @@
+﻿  Nave.cpp
+C:\Users\harri\Documents\Programacao\C++\Ship\Ship\Nave.cpp(88,41): warning C4244: 'argumento': conversão de 'double' para 'float', possível perda de dados
+C:\Users\harri\Documents\Programacao\C++\Ship\Ship\Nave.cpp(96,41): warning C4244: 'argumento': conversão de 'double' para 'float', possível perda de dados
+  Gerando código
+  1 of 2140 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
+  Finalizada a geração de código
+  Ship.vcxproj -> C:\Users\harri\Documents\Programacao\C++\Ship\x64\Release\Ship.exe

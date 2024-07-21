@@ -1,0 +1,41 @@
+{
+	"modelos_naves":
+	[
+		{
+			"id":1,
+			"nome":"modelo1",
+			"textura":"Nave.png",
+			"aceleracao":20,
+			"velocidade_max":12,
+			"carga":40,
+			"frenagem":40,
+			"turn_speed":2,
+			"peso":0.5,
+			"escudo":{
+				"id":1,
+				"durabilidade":5,
+				"degradacao":2,
+				"peso":7,
+				"protecao":50
+			},
+			"casco":{
+				"peso":7,
+				"resistencia_geral":50,
+				"durabilidade":10,
+				"degradacao":3,
+				"melhorias_casco":[]
+			},
+			"motor":{
+				"id":1,
+				"degradacao": 3,
+				"nome": "az012",
+				"empuxo": 10,
+				"propelente": "amularetano",
+				"limite_tanque": 80,
+				"queima": 150,
+				"resfriamento": 80,
+				"melhorias_motor":[	]
+			}
+		}
+	]
+}

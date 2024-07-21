@@ -1,0 +1,17 @@
+{
+	"tipo_item	":[
+		{
+			"id":1,
+			"descricao":"melhoria casco"
+		},
+		{
+			"id":2,
+			"descricao":"melhoria motor"
+		},
+		{
+			"id":3,
+			"descricao":"comercial"
+		}
+	]
+
+}

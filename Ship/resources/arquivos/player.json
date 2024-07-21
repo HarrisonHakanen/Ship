@@ -1,0 +1,140 @@
+{
+	"player":{
+		"id":1,
+		"nome":"nave1",
+		"peso_total":10,
+		"espacos_inventario":6,
+		"vida":100,
+		"modelo_nave":{
+			"id":1,
+			"nome":"modelo1",
+			"textura":"Spaceship01.png",
+			"aceleracao":0.00003,
+			"velocidade_max":0.3,
+			"carga":40,
+			"frenagem":0.00002,
+			"turn_speed":0.0005,
+			"peso":0.5,
+			"escudo":{
+				"id":1,
+				"durabilidade":5,
+				"degradacao":2,
+				"peso":7
+			},
+			"casco":{
+				"peso":7,
+				"resistencia_geral":50,
+				"durabilidade":10,
+				"degradacao":3,
+				"espacos_melhoria":4,
+				"melhorias_casco":[]
+			},
+			"motor":{
+				"id":1,
+				"nome": "az012",
+				"durabilidade":20,
+				"degradacao": 3,				
+				"empuxo": 10,
+				"propelente": "amularetano",
+				"limite_tanque": 80,
+				"queima": 150,
+				"resfriamento": 80,
+				"espacos_melhoria":4,
+				"melhorias_motor":[	]
+			}
+		},
+		"arma":{
+			"id":1,
+			"texture":"Tiro3.png",
+			"dano":10,
+			"temperatura_maxima":150,
+			"tempo_recuperacao":0.00004,
+			"recuperacao_alpha":1,
+			"distancia_maxima":2000,
+			"velocidade_projetil":0.9,
+			"velocidade_disparos":0.09,
+			"peso":30,
+			"quantidade_municao":50,
+			"espacos_melhoria":4,
+			"melhorias_motor":[	]
+		},
+		"itens":[
+			{
+				"id":1,
+				"textura":"Resistencia_amonia.png",		
+				"tipo_item":{
+					"id":1,
+					"descricao":"melhoria casco"
+				},
+				"item_real":{
+					"id":1,
+					"nome":"AumentaResistenciaAmonia",		
+					"efeitos":[
+						{"id":1,"nome":"amonia","positivo":true,"quantidade":10},
+						{"id":4,"nome":"impacto","positivo":false,"quantidade":5},
+						{"id":5,"nome":"laser_tipo2","positivo":true,"quantidade":7}
+					]			
+				},
+				"quantidade":5,
+				"peso":2
+			},
+			{
+				"id":1,
+				"textura":"Resistencia_amonia.png",		
+				"tipo_item":{
+					"id":1,
+					"descricao":"melhoria casco"
+				},
+				"item_real":{
+					"id":1,
+					"nome":"AumentaResistenciaAmonia",		
+					"efeitos":[
+						{"id":1,"nome":"amonia","positivo":true,"quantidade":10},
+						{"id":4,"nome":"impacto","positivo":false,"quantidade":5},
+						{"id":5,"nome":"laser_tipo2","positivo":true,"quantidade":7}
+					]			
+				},
+				"quantidade":5,
+				"peso":2
+			},
+			{
+				"id":1,
+				"textura":"Resistencia_amonia.png",		
+				"tipo_item":{
+					"id":1,
+					"descricao":"melhoria casco"
+				},
+				"item_real":{
+					"id":1,
+					"nome":"AumentaResistenciaAmonia",		
+					"efeitos":[
+						{"id":1,"nome":"amonia","positivo":true,"quantidade":10},
+						{"id":4,"nome":"impacto","positivo":false,"quantidade":5},
+						{"id":5,"nome":"laser_tipo2","positivo":true,"quantidade":7}
+					]			
+				},
+				"quantidade":5,
+				"peso":2
+			},
+			{
+				"id":1,
+				"textura":"Resistencia_amonia.png",		
+				"tipo_item":{
+					"id":1,
+					"descricao":"melhoria casco"
+				},
+				"item_real":{
+					"id":1,
+					"nome":"AumentaResistenciaAmonia",		
+					"efeitos":[
+						{"id":1,"nome":"amonia","positivo":true,"quantidade":10},
+						{"id":4,"nome":"impacto","positivo":false,"quantidade":5},
+						{"id":5,"nome":"laser_tipo2","positivo":true,"quantidade":7}
+					]			
+				},
+				"quantidade":5,
+				"peso":2
+			}
+		]		
+	}
+}

@@ -1,0 +1,10 @@
+{
+	"escudo":{
+		"id":1
+		"durabilidade":5,
+		"degradacao":2,
+		"peso":7,
+		"protecao":50
+	}
+
+}

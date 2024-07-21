@@ -1,0 +1,75 @@
+{
+	"itens":[
+		{
+			"id":1,
+			"textura":"Resistencia_amonia.png",		
+			"tipo_item":{
+				"id":1,
+				"descricao":"melhoria casco"
+			},
+			"item_real":{
+				"id":1,
+				"nome":"AumentaResistenciaAmonia",		
+				"efeitos":[
+					{"id":1,"nome":"amonia","positivo":true,"quantidade":10},
+					{"id":4,"nome":"impacto","positivo":false,"quantidade":5},
+					{"id":5,"nome":"laser_tipo2","positivo":true,"quantidade":7}
+				]			
+			},
+			"quantidade":1,
+			"peso":2
+		},
+		{
+			"id":2,
+			"textura":"Resistencia_congelamento.png",
+			"tipo_item":{
+				"id":1,
+				"descricao":"melhoria casco"
+			},
+			"item_real":{
+				"id":2,
+				"nome":"AumentaResistenciaCongelamento",		
+				"efeitos":[
+					{"id":2,"nome":"amonia","positivo":false,"quantidade":2},
+					{"id":8,"nome":"congelamento","positivo":false,"quantidade":6}				
+				]
+			},
+			"quantidade":1,
+			"peso":2
+		},
+		{
+			"id":3,
+			"textura":"Aumento_empuxo.png",
+			"tipo_item":{
+				"id":2,
+				"descricao":"melhoria motor"
+			},
+			"item_real":{
+				"id":1,
+				"nome":"aumentoEmpuxo",
+				"efeitos":[					
+					{"id":9,"nome":"empuxo","positivo":true,"quantidade":7}
+				]
+			},
+			"quantidade":1,
+			"peso":2
+		},
+		{
+			"id":4,
+			"textura":"Aumento_resfriamento.png",
+			"tipo_item":{
+				"id":2,
+				"descricao":"melhoria motor"
+			},
+			"item_real":{
+				"id":2,
+				"nome":"aumentoResfriamento",
+				"efeitos":[					
+					{"id":11,"nome":"resfriamento","positivo":true,"quantidade":3}
+				]
+			},
+			"quantidade":1,
+			"peso":2
+		}
+	]
+}

@@ -1,0 +1,16 @@
+{
+	"planetas":[
+		{
+			"id":1,
+			"nome":"planeta1",
+			"raio":200,
+			"massa":0.8
+		},
+		{
+			"id":2,
+			"nome":"planeta2",
+			"raio":500,
+			"massa":0.8
+		}		
+	]
+}

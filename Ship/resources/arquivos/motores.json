@@ -1,0 +1,31 @@
+{
+	"motores":[
+		{
+			"id":1,
+			"nome": "az012",
+			"durabilidade":20,
+			"degradacao": 3,				
+			"empuxo": 10,
+			"propelente": "amularetano",
+			"limite_tanque": 80,
+			"queima": 150,
+			"resfriamento": 80,
+			"melhorias_motor":[
+				{
+					"id":1,
+					"nome":"aumentoEmpuxo",
+					"efeitos":[					
+						{"id":9,"nome":"empuxo","positivo":true,"quantidade":7}
+					]
+				},
+				{
+					"id":2,
+					"nome":"aumentoResfriamento",
+					"efeitos":[					
+						{"id":11,"nome":"resfriamento","positivo":true,"quantidade":3}
+					]
+				}
+			]
+		}
+	]
+}

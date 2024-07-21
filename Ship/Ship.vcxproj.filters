@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Arquivos de Origem">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Arquivos de Cabeçalho">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Arquivos de Recurso">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Modelos">
+      <UniqueIdentifier>{b5b63733-c1e9-4706-8805-70f4ed72f641}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Configuracoes">
+      <UniqueIdentifier>{8f5d5928-79a1-493c-867d-43a12997f6b1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Nave.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Background.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources.cpp">
+      <Filter>Configuracoes</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Configuracoes</Filter>
+    </ClCompile>
+    <ClCompile Include="Motor.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Escudo.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Casco.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Melhoria_motor.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Melhoria_casco.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Melhoria_escudo.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Efeito.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Planeta.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="ModeloNave.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="arma.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Tiro.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Inimigo.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Capsula.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Modelos</Filter>
+    </ClCompile>
+    <ClCompile Include="Item_interface.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Nave.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Background.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Imports.h">
+      <Filter>Configuracoes</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources.h">
+      <Filter>Configuracoes</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Configuracoes</Filter>
+    </ClInclude>
+    <ClInclude Include="Motor.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Escudo.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Casco.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Melhoria_motor.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Melhoria_casco.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Melhoria_escudo.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Efeito.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Planeta.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="ModeloNave.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="arma.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Tiro.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Inimigo.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Capsula.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+    <ClInclude Include="Item_interface.h">
+      <Filter>Modelos</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
