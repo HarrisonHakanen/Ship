@@ -12,9 +12,13 @@
 
 
 float computeAngle(float ax, float ay, float bx, float by);
+void transfereItens(std::vector<std::shared_ptr<Item>>& itens1, std::vector<std::shared_ptr<Item>>& itens2, int& i);
+void selecionaItens(bool select_side, int side, int side_compare, bool& right_pressed, bool& left_pressed, std::vector<std::shared_ptr<Item>>& itens1, float& button_current_time, float button_time, int i);
+void renderItens(std::vector<std::shared_ptr<Item>>& itens, bool select_side, int side, int side_compare,
+    int i, float& x, float& y, float x_increment, float y_increment, float x_start, std::shared_ptr <sf::RenderWindow>& window);
 float itemInteract(
     bool item_find,
-    Game game,
+    std::shared_ptr <sf::RenderWindow>& window,
     sf::RectangleShape itemScreen, 
     sf::RectangleShape selectScreen, 
     std::vector<std::shared_ptr<Capsula>>capsulas, 
@@ -301,7 +305,7 @@ int main() {
 
         itemInteract(
             item_find,
-            game,
+            game.window,
             itemScreen,
             selectScreen,
             capsulas,
@@ -331,7 +335,7 @@ float computeAngle(float ax, float ay, float bx, float by) {
 
 float itemInteract(
     bool item_find,
-    Game game,
+    std::shared_ptr <sf::RenderWindow>& window,
     sf::RectangleShape itemScreen,
     sf::RectangleShape selectScreen,
     std::vector<std::shared_ptr<Capsula>>capsulas,
@@ -348,7 +352,7 @@ float itemInteract(
 
 
     if (item_find) {
-        sf::Vector2f viewCenter = game.window->getView().getCenter();
+        sf::Vector2f viewCenter = window->getView().getCenter();
         itemScreen.setPosition(viewCenter);
 
         if (side == 0) {
@@ -361,8 +365,8 @@ float itemInteract(
             selectScreen.setPosition(itemScreen.getPosition().x - itemScreen.getSize().x / 2, itemScreen.getPosition().y - itemScreen.getSize().y / 2);
         }
         
-        game.window->draw(itemScreen);
-        game.window->draw(selectScreen);
+        window->draw(itemScreen);
+        window->draw(selectScreen);
 
         for (auto capsulaAtual : capsulas) {
             
@@ -387,27 +391,7 @@ float itemInteract(
                                 if (nave.itens.size() < nave.espacos_inventario) {
 
                                     //Nave recebe item
-                                    if (nave.itens.size() == 0) {
-                                        nave.itens.emplace_back(capsulaAtual->itens.at(i)->returnItem(true));
-                                    }
-                                    else {
-                                        nave.itens.emplace_back(capsulaAtual->itens.at(i)->returnItem(false));
-                                    }
-                                    //--
-                                    
-                                    capsulaAtual->itens.erase(capsulaAtual->itens.begin() + i);
-
-                                    if (capsulaAtual->itens.size() > 0) {
-                                        if (i >= capsulaAtual->itens.size()) {
-                                            capsulaAtual->itens.at(i-1)->selectItem();
-                                        }else{
-                                            capsulaAtual->itens.at(i)->selectItem();
-                                        }                                        
-                                    }
-
-                                    if (i == capsulaAtual->itens.size() && capsulaAtual->itens.size() > 0) {
-                                        i -= 1;
-                                    }
+                                    transfereItens(nave.itens, capsulaAtual->itens,i);                                    
                                 }
 
                                 e_pressed = false;
@@ -420,80 +404,12 @@ float itemInteract(
                             e_pressed = false;
                             button_current_time = button_time;
                         }
-
-                        
                     }
 
-
-                    if (select_side && side == 0) {
-
-                        if (right_pressed) {
-
-                            if (capsulaAtual->itens.at(i)->selecionado) {
-
-                                if (i + 1 < capsulaAtual->itens.size()) {
-                                    capsulaAtual->itens.at(i)->deselectItem();
-                                    capsulaAtual->itens.at(i + 1)->selectItem();
-                                }
-                                else {
-                                    capsulaAtual->itens.at(i)->deselectItem();
-                                    capsulaAtual->itens.at(0)->selectItem();
-                                }
-
-                                right_pressed = false;
-                                button_current_time = button_time;
-                            }
-                        }
-
-
-                        if (left_pressed) {
-
-                            if (capsulaAtual->itens.at(i)->selecionado) {
-
-                                if (i - 1 >= 0) {
-                                    capsulaAtual->itens.at(i)->deselectItem();
-                                    capsulaAtual->itens.at(i - 1)->selectItem();
-                                }
-                                else {
-                                    capsulaAtual->itens.at(i)->deselectItem();
-                                    capsulaAtual->itens.at(capsulaAtual->itens.size() - 1)->selectItem();
-                                }
-
-                                left_pressed = false;
-                                button_current_time = button_time;
-                            }
-                        }
-                    }                    
-                    
-                    
-                    if (capsulaAtual->itens.size() > 0) {
-
-                        if (select_side&& side == 0) {
-                            if (capsulaAtual->itens.at(i)->selecionado) {
-                                capsulaAtual->itens.at(i)->sprite->setTextureRect(sf::IntRect(152, 0, 152, 152));
-                            }
-                        }
-                        else {
-                            if (capsulaAtual->itens.at(i)->selecionado) {
-                                capsulaAtual->itens.at(i)->sprite->setTextureRect(sf::IntRect(0, 0, 152, 152));
-                            }
-                        }
-                        
-
-                        if (i != 0 && i % 3 == 0) {
-                            y_item = y_item + capsulaAtual->itens.at(i)->sprite->getTexture()->getSize().y + y_increment;
-                            x_item = x_item_start;
-                        }
-
-
-                        capsulaAtual->itens.at(i)->sprite->setPosition(x_item, y_item);
-                        game.window->draw(*capsulaAtual->itens.at(i)->sprite);
-
-                        x_item += capsulaAtual->itens.at(i)->sprite->getTexture()->getSize().x / 2 + x_increment;
-                    }                                        
+                    selecionaItens(select_side,side,0,right_pressed,left_pressed, capsulaAtual->itens,button_current_time,button_time,i);                    
+                                        
+                    renderItens(capsulaAtual->itens, select_side, side, 0,i,x_item, y_item, x_increment, y_increment, x_item_start, window);                    
                 }
-
-
 
 
                 //Mostra os itens do player
@@ -514,30 +430,7 @@ float itemInteract(
                             if (nave.itens.at(i)->selecionado) {
 
                                 //Capsula recebe item
-                                if (capsulaAtual->itens.size() == 0) {
-                                    capsulaAtual->itens.emplace_back(nave.itens.at(i)->returnItem(true));
-                                }
-                                else {
-                                    capsulaAtual->itens.emplace_back(nave.itens.at(i)->returnItem(false));
-                                }
-                                //--
-                                
-                                nave.itens.erase(nave.itens.begin() + i);
-
-                               
-                                if (nave.itens.size() > 0) {
-                                    if (i >= nave.itens.size()) {
-                                        nave.itens.at(i - 1)->selectItem();
-                                    }
-                                    else {
-                                        nave.itens.at(i)->selectItem();
-                                    }
-                                    
-                                }
-
-                                if (i == nave.itens.size() && nave.itens.size() > 0) {
-                                    i -= 1;
-                                } 
+                                transfereItens(capsulaAtual->itens, nave.itens, i);                                
 
                                 e_pressed = false;
                                 button_current_time = button_time;
@@ -552,69 +445,9 @@ float itemInteract(
                     }
 
 
-                    if (select_side && side == 1) {
-
-                        if (right_pressed) {
-
-                            if (nave.itens.at(i)->selecionado) {
-
-                                if (i + 1 < nave.itens.size()) {
-                                    nave.itens.at(i)->deselectItem();
-                                    nave.itens.at(i + 1)->selectItem();
-                                }
-                                else {
-                                    nave.itens.at(i)->deselectItem();
-                                    nave.itens.at(0)->selectItem();
-                                }
-
-                                right_pressed = false;
-                                button_current_time = button_time;
-                            }
-                        }
-
-
-                        if (left_pressed) {
-
-                            if (nave.itens.at(i)->selecionado) {
-
-                                if (i - 1 >= 0) {
-                                    nave.itens.at(i)->deselectItem();
-                                    nave.itens.at(i - 1)->selectItem();
-                                }
-                                else {
-                                    nave.itens.at(i)->deselectItem();
-                                    nave.itens.at(nave.itens.size() - 1)->selectItem();
-                                }
-
-                                left_pressed = false;
-                                button_current_time = button_time;
-                            }
-                        }
-                    }
+                    selecionaItens(select_side, side, 1,right_pressed, left_pressed, nave.itens, button_current_time, button_time, i);
                     
-                    if (nave.itens.size() > 0) {
-
-                        if (select_side && side == 1) {
-                            if (nave.itens.at(i)->selecionado) {
-                                nave.itens.at(i)->sprite->setTextureRect(sf::IntRect(152, 0, 152, 152));
-                            }
-                        }
-                        else {
-                            if (nave.itens.at(i)->selecionado) {
-                                nave.itens.at(i)->sprite->setTextureRect(sf::IntRect(0, 0, 152, 152));
-                            }
-                        }
-
-                        if (i != 0 && i % 3 == 0) {
-                            y = y + nave.itens.at(i)->sprite->getTexture()->getSize().y + y_increment;
-                            x = x_start;
-                        }
-
-                        nave.itens.at(i)->sprite->setPosition(x, y);
-                        game.window->draw(*nave.itens.at(i)->sprite);
-
-                        x += nave.itens.at(i)->sprite->getTexture()->getSize().x / 2 + x_increment;
-                    }                    
+                    renderItens(nave.itens, select_side, side, 1, i, x, y, x_increment, y_increment, x_start, window);                                        
                 }
 
 
@@ -643,5 +476,107 @@ float itemInteract(
     }
     else {
         select_side = false;
+    }
+}
+
+
+void transfereItens(std::vector<std::shared_ptr<Item>>& itens1, std::vector<std::shared_ptr<Item>>& itens2, int& i) {
+
+    
+    if (itens1.size() == 0) {
+        itens1.emplace_back(itens2.at(i)->returnItem(true));
+    }
+    else {
+        itens1.emplace_back(itens2.at(i)->returnItem(false));
+    }
+    
+
+    itens2.erase(itens2.begin() + i);
+
+    if (itens2.size() > 0) {
+        if (i >= itens2.size()) {
+            itens2.at(i - 1)->selectItem();
+        }
+        else {
+            itens2.at(i)->selectItem();
+        }
+    }
+
+    if (i == itens2.size() && itens2.size() > 0) {
+        i -= 1;
+    }
+}
+
+
+void selecionaItens(bool select_side, int side,int side_compare, bool& right_pressed, bool& left_pressed, 
+    std::vector<std::shared_ptr<Item>>& itens1, float& button_current_time, float button_time,int i) {
+
+    if (select_side && side == side_compare) {
+
+        if (right_pressed) {
+
+            if (itens1.at(i)->selecionado) {
+
+                if (i + 1 < itens1.size()) {
+                    itens1.at(i)->deselectItem();
+                    itens1.at(i + 1)->selectItem();
+                }
+                else {
+                    itens1.at(i)->deselectItem();
+                    itens1.at(0)->selectItem();
+                }
+
+                right_pressed = false;
+                button_current_time = button_time;
+            }
+        }
+
+
+        if (left_pressed) {
+
+            if (itens1.at(i)->selecionado) {
+
+                if (i - 1 >= 0) {
+                    itens1.at(i)->deselectItem();
+                    itens1.at(i - 1)->selectItem();
+                }
+                else {
+                    itens1.at(i)->deselectItem();
+                    itens1.at(itens1.size() - 1)->selectItem();
+                }
+
+                left_pressed = false;
+                button_current_time = button_time;
+            }
+        }
+    }
+}
+
+
+void renderItens(std::vector<std::shared_ptr<Item>>& itens,bool select_side,int side,int side_compare,
+    int i,float& x, float& y,float x_increment, float y_increment,float x_start, std::shared_ptr <sf::RenderWindow>& window) {
+
+    if (itens.size() > 0) {
+
+        if (select_side && side == side_compare) {
+            if (itens.at(i)->selecionado) {
+                itens.at(i)->sprite->setTextureRect(sf::IntRect(152, 0, 152, 152));
+            }
+        }
+        else {
+            if (itens.at(i)->selecionado) {
+                itens.at(i)->sprite->setTextureRect(sf::IntRect(0, 0, 152, 152));
+            }
+        }
+
+        if (i != 0 && i % 3 == 0) {
+            y = y + itens.at(i)->sprite->getTexture()->getSize().y + y_increment;
+            x = x_start;
+        }
+
+        itens.at(i)->sprite->setPosition(x, y);
+        window->draw(*itens.at(i)->sprite);
+
+        x += itens.at(i)->sprite->getTexture()->getSize().x / 2 + x_increment;
     }
 }
