@@ -17,6 +17,7 @@ public:
 	Item(int id_, float peso_, int quantidade_, std::string textura_);	
 	void selectItem();
 	void deselectItem();
+	std::shared_ptr<Item> returnItem(bool primeiro);
 };
 
 

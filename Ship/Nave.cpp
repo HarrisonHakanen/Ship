@@ -153,6 +153,9 @@ void Nave::load() {
     }
 
 
+    itens.at(0)->selecionado = true;
+
+
     id = data["player"]["id"].template get<int>();
     nome = data["player"]["nome"].template get<std::string>();
     espacos_inventario = data["player"]["espacos_inventario"].template get<int>();

@@ -12,9 +12,22 @@
 
 
 float computeAngle(float ax, float ay, float bx, float by);
-float itemInteract(bool item_find,Game game,sf::RectangleShape itemScreen, sf::RectangleShape selectScreen, 
-    std::vector<std::shared_ptr<Capsula>>capsulas, Nave& nave,bool& e_pressed,bool& right_pressed,
-    bool& left_pressed,float& button_current_time,float button_time,float button_decrease_time);
+float itemInteract(
+    bool item_find,
+    Game game,
+    sf::RectangleShape itemScreen, 
+    sf::RectangleShape selectScreen, 
+    std::vector<std::shared_ptr<Capsula>>capsulas, 
+    Nave& nave,
+    bool& e_pressed,
+    bool& select_side,
+    bool& right_pressed,
+    bool& left_pressed,
+    float& button_current_time,
+    int& side,
+    float button_time,
+    float button_decrease_time
+   );
 
 int main() {
 
@@ -56,12 +69,11 @@ int main() {
 
 
     // Criação do retângulo
-    sf::RectangleShape selectScreen(sf::Vector2f(750.f, 1000.f));
-    //selectScreen.setOrigin(selectScreen.getSize() / 2.f);
+    sf::RectangleShape selectScreen(sf::Vector2f(750.f, 1000.f));    
 
     // Configuração da borda
-    selectScreen.setOutlineThickness(10.f);  // Espessura da borda
-    selectScreen.setOutlineColor(sf::Color::White);  // Cor da borda
+    selectScreen.setOutlineThickness(10.f);
+    selectScreen.setOutlineColor(sf::Color::White);
 
     // Deixar o preenchimento transparente
     selectScreen.setFillColor(sf::Color::Transparent);
@@ -81,16 +93,20 @@ int main() {
 
     
 
+
     bool left_pressed = false;
     float left_button_current_time = 0;
    
     bool right_pressed = false;    
     float right_button_current_time = 0;    
 
+
+    bool select_side = false;
+    int side = 1;
     bool e_pressed = false;
     float e_button_current_time = 0;
-
     float button_current_time = 0;
+
 
     
 	while (game.window->isOpen()) {
@@ -119,7 +135,10 @@ int main() {
             }
 
             if (item_find) {                
-                if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::E)) e_pressed = true;
+
+                if (e_button_current_time <= 0) {
+                    if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::E)) e_pressed = true;
+                }                
                 if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Left)) left_pressed = true;
                 if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Right)) right_pressed = true;
             }
@@ -132,8 +151,6 @@ int main() {
 
                 camera.view.setCenter(nave.sprite->getPosition().x + ((nave.sprite->getTexture()->getSize().x * nave.escalas.x) / 2), nave.sprite->getPosition().y + ((nave.sprite->getTexture()->getSize().y * nave.escalas.y) / 2));
                 game.window->setView(camera.view);
-
-
 
 
                 //Lógicas do jogo
@@ -164,11 +181,18 @@ int main() {
                         }
                         
                         if (f_pressed)
-                        {                                                        
-                            item_find = !item_find;                            
-                            
+                        {           
+
+                            if (select_side) {
+                                select_side = false;
+                            }
+                            else {
+                                item_find = !item_find;
+                            }
+
                             f_pressed = false;
                             f_button_current_time = f_button_time;
+                            
                         }
 
 
@@ -275,21 +299,22 @@ int main() {
         }
 
 
-            itemInteract(
-                item_find,
-                game,
-                itemScreen,
-                selectScreen,
-                capsulas,
-                nave,
-                e_pressed,                
-                right_pressed,                
-                left_pressed,                
-                button_current_time,
-                50,
-                0.05);
-        
-        
+        itemInteract(
+            item_find,
+            game,
+            itemScreen,
+            selectScreen,
+            capsulas,
+            nave,
+            e_pressed,
+            select_side,
+            right_pressed,                
+            left_pressed,                
+            button_current_time,
+            side,
+            50,
+            0.05);
+                
 
         game.window->display();
         
@@ -304,7 +329,6 @@ float computeAngle(float ax, float ay, float bx, float by) {
     return atan2((by - ay), (bx - ax));
 };
 
-
 float itemInteract(
     bool item_find,
     Game game,
@@ -313,9 +337,11 @@ float itemInteract(
     std::vector<std::shared_ptr<Capsula>>capsulas,
     Nave& nave,  
     bool& e_pressed,
+    bool& select_side,
     bool& right_pressed,
     bool& left_pressed,
     float& button_current_time,
+    int& side,
     float button_time,
     float button_decrease_time) {
     
@@ -324,7 +350,17 @@ float itemInteract(
     if (item_find) {
         sf::Vector2f viewCenter = game.window->getView().getCenter();
         itemScreen.setPosition(viewCenter);
-        selectScreen.setPosition(itemScreen.getPosition().x - itemScreen.getSize().x/2, itemScreen.getPosition().y - itemScreen.getSize().y/2);
+
+        if (side == 0) {
+            selectScreen.setPosition(itemScreen.getPosition().x - itemScreen.getSize().x / 2, itemScreen.getPosition().y - itemScreen.getSize().y / 2);
+        }
+        else if (side == 1) {
+            selectScreen.setPosition(itemScreen.getPosition().x, itemScreen.getPosition().y - itemScreen.getSize().y / 2);
+        }
+        else {
+            selectScreen.setPosition(itemScreen.getPosition().x - itemScreen.getSize().x / 2, itemScreen.getPosition().y - itemScreen.getSize().y / 2);
+        }
+        
         game.window->draw(itemScreen);
         game.window->draw(selectScreen);
 
@@ -342,73 +378,107 @@ float itemInteract(
 
                 for (int i = 0; i < capsulaAtual->itens.size(); i++) {
 
+                    if (e_pressed && side == 0) {
+                        
+                        if (select_side) {
 
-                    if (e_pressed) {
-                        if (capsulaAtual->itens.at(i)->selecionado) {
+                            if (capsulaAtual->itens.at(i)->selecionado) {
 
-                            if (nave.itens.size() < nave.espacos_inventario) {
+                                if (nave.itens.size() < nave.espacos_inventario) {
 
-                                nave.itens.emplace_back(capsulaAtual->itens.at(i));
-                                capsulaAtual->itens.erase(capsulaAtual->itens.begin() + i);
+                                    //Nave recebe item
+                                    if (nave.itens.size() == 0) {
+                                        nave.itens.emplace_back(capsulaAtual->itens.at(i)->returnItem(true));
+                                    }
+                                    else {
+                                        nave.itens.emplace_back(capsulaAtual->itens.at(i)->returnItem(false));
+                                    }
+                                    //--
+                                    
+                                    capsulaAtual->itens.erase(capsulaAtual->itens.begin() + i);
 
-                                if (capsulaAtual->itens.size() > 0) {
+                                    if (capsulaAtual->itens.size() > 0) {
+                                        if (i >= capsulaAtual->itens.size()) {
+                                            capsulaAtual->itens.at(i-1)->selectItem();
+                                        }else{
+                                            capsulaAtual->itens.at(i)->selectItem();
+                                        }                                        
+                                    }
+
+                                    if (i == capsulaAtual->itens.size() && capsulaAtual->itens.size() > 0) {
+                                        i -= 1;
+                                    }
+                                }
+
+                                e_pressed = false;
+                                button_current_time = button_time;
+                            }
+                        }
+                        else {
+                            select_side = true;
+
+                            e_pressed = false;
+                            button_current_time = button_time;
+                        }
+
+                        
+                    }
+
+
+                    if (select_side && side == 0) {
+
+                        if (right_pressed) {
+
+                            if (capsulaAtual->itens.at(i)->selecionado) {
+
+                                if (i + 1 < capsulaAtual->itens.size()) {
+                                    capsulaAtual->itens.at(i)->deselectItem();
+                                    capsulaAtual->itens.at(i + 1)->selectItem();
+                                }
+                                else {
+                                    capsulaAtual->itens.at(i)->deselectItem();
                                     capsulaAtual->itens.at(0)->selectItem();
                                 }
 
-                                if (i == capsulaAtual->itens.size() && capsulaAtual->itens.size() > 0) {
-                                    i -= 1;
+                                right_pressed = false;
+                                button_current_time = button_time;
+                            }
+                        }
+
+
+                        if (left_pressed) {
+
+                            if (capsulaAtual->itens.at(i)->selecionado) {
+
+                                if (i - 1 >= 0) {
+                                    capsulaAtual->itens.at(i)->deselectItem();
+                                    capsulaAtual->itens.at(i - 1)->selectItem();
                                 }
+                                else {
+                                    capsulaAtual->itens.at(i)->deselectItem();
+                                    capsulaAtual->itens.at(capsulaAtual->itens.size() - 1)->selectItem();
+                                }
+
+                                left_pressed = false;
+                                button_current_time = button_time;
                             }
-
-                            e_pressed = false;
                         }
-                    }
-
+                    }                    
                     
-                    if (right_pressed) {
-                        if (capsulaAtual->itens.at(i)->selecionado) {
-
-                            if (i + 1 < capsulaAtual->itens.size()) {
-                                capsulaAtual->itens.at(i)->deselectItem();
-                                capsulaAtual->itens.at(i + 1)->selectItem();                                
-                            }
-                            else {
-                                capsulaAtual->itens.at(i)->deselectItem();
-                                capsulaAtual->itens.at(0)->selectItem();
-                            }
-
-                            right_pressed = false;
-                        }
-
-                        button_current_time = button_time;
-                    }
-
-
-                    if (left_pressed) {
-                        if (capsulaAtual->itens.at(i)->selecionado) {
-
-                            if (i - 1 >= 0) {
-                                capsulaAtual->itens.at(i)->deselectItem();
-                                capsulaAtual->itens.at(i - 1)->selectItem();
-                            }
-                            else {
-                                capsulaAtual->itens.at(i)->deselectItem();
-                                capsulaAtual->itens.at(capsulaAtual->itens.size()-1)->selectItem();
-                            }
-
-                            left_pressed = false;
-                        }
-
-                        button_current_time = button_time;
-                    }
                     
                     if (capsulaAtual->itens.size() > 0) {
 
-
-                        if (capsulaAtual->itens.at(i)->selecionado) {
-                            capsulaAtual->itens.at(i)->sprite->setTextureRect(sf::IntRect(152, 0, 152, 152));
+                        if (select_side&& side == 0) {
+                            if (capsulaAtual->itens.at(i)->selecionado) {
+                                capsulaAtual->itens.at(i)->sprite->setTextureRect(sf::IntRect(152, 0, 152, 152));
+                            }
                         }
-
+                        else {
+                            if (capsulaAtual->itens.at(i)->selecionado) {
+                                capsulaAtual->itens.at(i)->sprite->setTextureRect(sf::IntRect(0, 0, 152, 152));
+                            }
+                        }
+                        
 
                         if (i != 0 && i % 3 == 0) {
                             y_item = y_item + capsulaAtual->itens.at(i)->sprite->getTexture()->getSize().y + y_increment;
@@ -437,17 +507,141 @@ float itemInteract(
 
                 for (int i = 0; i < nave.itens.size(); i++) {
 
-                    if (i != 0 && i % 3 == 0) {
-                        y = y + nave.itens.at(i)->sprite->getTexture()->getSize().y + y_increment;
-                        x = x_start;
+
+                    if (e_pressed && side == 1) {
+                        if (select_side) {
+
+                            if (nave.itens.at(i)->selecionado) {
+
+                                //Capsula recebe item
+                                if (capsulaAtual->itens.size() == 0) {
+                                    capsulaAtual->itens.emplace_back(nave.itens.at(i)->returnItem(true));
+                                }
+                                else {
+                                    capsulaAtual->itens.emplace_back(nave.itens.at(i)->returnItem(false));
+                                }
+                                //--
+                                
+                                nave.itens.erase(nave.itens.begin() + i);
+
+                               
+                                if (nave.itens.size() > 0) {
+                                    if (i >= nave.itens.size()) {
+                                        nave.itens.at(i - 1)->selectItem();
+                                    }
+                                    else {
+                                        nave.itens.at(i)->selectItem();
+                                    }
+                                    
+                                }
+
+                                if (i == nave.itens.size() && nave.itens.size() > 0) {
+                                    i -= 1;
+                                } 
+
+                                e_pressed = false;
+                                button_current_time = button_time;
+                            }
+                        }
+                        else {
+                            select_side = true;
+
+                            e_pressed = false;
+                            button_current_time = button_time;
+                        }
                     }
 
-                    nave.itens.at(i)->sprite->setPosition(x, y);
-                    game.window->draw(*nave.itens.at(i)->sprite);
 
-                    x += nave.itens.at(i)->sprite->getTexture()->getSize().x / 2 + x_increment;
+                    if (select_side && side == 1) {
+
+                        if (right_pressed) {
+
+                            if (nave.itens.at(i)->selecionado) {
+
+                                if (i + 1 < nave.itens.size()) {
+                                    nave.itens.at(i)->deselectItem();
+                                    nave.itens.at(i + 1)->selectItem();
+                                }
+                                else {
+                                    nave.itens.at(i)->deselectItem();
+                                    nave.itens.at(0)->selectItem();
+                                }
+
+                                right_pressed = false;
+                                button_current_time = button_time;
+                            }
+                        }
+
+
+                        if (left_pressed) {
+
+                            if (nave.itens.at(i)->selecionado) {
+
+                                if (i - 1 >= 0) {
+                                    nave.itens.at(i)->deselectItem();
+                                    nave.itens.at(i - 1)->selectItem();
+                                }
+                                else {
+                                    nave.itens.at(i)->deselectItem();
+                                    nave.itens.at(nave.itens.size() - 1)->selectItem();
+                                }
+
+                                left_pressed = false;
+                                button_current_time = button_time;
+                            }
+                        }
+                    }
+                    
+                    if (nave.itens.size() > 0) {
+
+                        if (select_side && side == 1) {
+                            if (nave.itens.at(i)->selecionado) {
+                                nave.itens.at(i)->sprite->setTextureRect(sf::IntRect(152, 0, 152, 152));
+                            }
+                        }
+                        else {
+                            if (nave.itens.at(i)->selecionado) {
+                                nave.itens.at(i)->sprite->setTextureRect(sf::IntRect(0, 0, 152, 152));
+                            }
+                        }
+
+                        if (i != 0 && i % 3 == 0) {
+                            y = y + nave.itens.at(i)->sprite->getTexture()->getSize().y + y_increment;
+                            x = x_start;
+                        }
+
+                        nave.itens.at(i)->sprite->setPosition(x, y);
+                        game.window->draw(*nave.itens.at(i)->sprite);
+
+                        x += nave.itens.at(i)->sprite->getTexture()->getSize().x / 2 + x_increment;
+                    }                    
+                }
+
+
+                if (!select_side) {
+                    if (right_pressed) {
+
+                        side = 1;
+                        right_pressed = false;
+                        button_current_time = button_time;
+                    }
+                    if (left_pressed) {
+
+                        side = 0;
+                        std::cout << side << "\n";
+                        left_pressed = false;
+                        button_current_time = button_time;
+                    }
+                }
+
+
+                if (button_current_time > 0) {
+                    button_current_time -= button_decrease_time;
                 }
             }
         }
+    }
+    else {
+        select_side = false;
     }
 }
