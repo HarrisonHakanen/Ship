@@ -39,12 +39,14 @@ void Game::loadItens() {
 			int id = item_json.at("id").template get<int>();
 			float peso = item_json.at("peso").template get<float>();
 			std::string textura = item_json.at("textura").template get<std::string>();
+			int empilhamento_max = item_json.at("empilhamento_max").template get<int>();
 			int quantidade = 1;
 
 			auto itemCarregado = std::make_shared<Item>(id,
 				peso,
 				quantidade,
-				textura);					
+				textura,
+				empilhamento_max);
 
 
 			if (item_json["tipo_item"]["id"].template get<int>() == 1) {

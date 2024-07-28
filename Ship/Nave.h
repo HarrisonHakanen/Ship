@@ -5,6 +5,7 @@
 #include "ModeloNave.h"
 #include "arma.h"
 #include "Item.h"
+#include "Slot.h"
 
 class Nave {
 public:
@@ -17,8 +18,9 @@ public:
 	float speed, angle,oldAngle;
 	bool Up, Down, Right, Left,Fire;
 	int id,tiros_disparados,espacos_inventario;
-	std::string nome;
-	std::vector<std::shared_ptr<Item>> itens;
+	std::string nome;	
+	std::vector<std::shared_ptr<Slot>> slots;
+	sf::Font font;
 
 
 	ModeloNave modeloNave;	

@@ -152,6 +152,7 @@
     <ClCompile Include="Nave.cpp" />
     <ClCompile Include="Planeta.cpp" />
     <ClCompile Include="Resources.cpp" />
+    <ClCompile Include="Slot.cpp" />
     <ClCompile Include="Tiro.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -176,6 +177,7 @@
     <ClInclude Include="Nave.h" />
     <ClInclude Include="Planeta.h" />
     <ClInclude Include="Resources.h" />
+    <ClInclude Include="Slot.h" />
     <ClInclude Include="Tiro.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

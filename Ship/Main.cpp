@@ -12,10 +12,12 @@
 
 
 float computeAngle(float ax, float ay, float bx, float by);
-void transfereItens(std::vector<std::shared_ptr<Item>>& itens1, std::vector<std::shared_ptr<Item>>& itens2, int& i);
-void selecionaItens(bool select_side, int side, int side_compare, bool& right_pressed, bool& left_pressed, std::vector<std::shared_ptr<Item>>& itens1, float& button_current_time, float button_time, int i);
-void renderItens(std::vector<std::shared_ptr<Item>>& itens, bool select_side, int side, int side_compare,
-    int i, float& x, float& y, float x_increment, float y_increment, float x_start, std::shared_ptr <sf::RenderWindow>& window);
+void transfereItens(std::vector<std::shared_ptr<Slot>>& slots1, std::vector<std::shared_ptr<Slot>>& slots2, int& i,bool isNave, int espacos_inventario);
+void selecionaItens(bool select_side, int side, int side_compare, bool& right_pressed, bool& left_pressed, std::vector<std::shared_ptr<Slot>>& itens1, float& button_current_time, float button_time, int i);
+void renderItens(std::vector<std::shared_ptr<Slot>>& slots, 
+    bool select_side, int side, int side_compare,int i, float& x, float& y, float x_increment, 
+    float y_increment, float x_start, std::shared_ptr <sf::RenderWindow>& window);
+
 float itemInteract(
     bool item_find,
     std::shared_ptr <sf::RenderWindow>& window,
@@ -62,18 +64,18 @@ int main() {
     bool pause = false, inventarioOption = false,item_find = false;
 
     
-    sf::RectangleShape inventoryScreen(sf::Vector2f(400, 300));
-    inventoryScreen.setFillColor(sf::Color(100, 100, 100, 200));
+    sf::RectangleShape inventoryScreen(sf::Vector2f(400.f, 300.f));
+    inventoryScreen.setFillColor(sf::Color(100.f, 100.f, 100.f, 200.f));
     inventoryScreen.setOrigin(inventoryScreen.getSize() / 2.0f);
 
 
-    sf::RectangleShape itemScreen(sf::Vector2f(1500, 1000));
-    itemScreen.setFillColor(sf::Color(100, 100, 100, 200));
+    sf::RectangleShape itemScreen(sf::Vector2f(1500.f, 800.f));
+    itemScreen.setFillColor(sf::Color(100.f, 100.f, 100.f, 200.f));
     itemScreen.setOrigin(itemScreen.getSize() / 2.f);
 
 
     // Criação do retângulo
-    sf::RectangleShape selectScreen(sf::Vector2f(750.f, 1000.f));    
+    sf::RectangleShape selectScreen(sf::Vector2f(750.f, 800.f));    
 
     // Configuração da borda
     selectScreen.setOutlineThickness(10.f);
@@ -380,19 +382,18 @@ float itemInteract(
                 float x_item = x_item_start, y_item = y_item_start, x_increment = 50, y_increment = 50;
 
 
-                for (int i = 0; i < capsulaAtual->itens.size(); i++) {
+                for (int i = 0; i < capsulaAtual->slots.size(); i++) {
 
                     if (e_pressed && side == 0) {
                         
                         if (select_side) {
 
-                            if (capsulaAtual->itens.at(i)->selecionado) {
+                            if (capsulaAtual->slots.at(i)->selecionado) {
 
-                                if (nave.itens.size() < nave.espacos_inventario) {
-
-                                    //Nave recebe item
-                                    transfereItens(nave.itens, capsulaAtual->itens,i);                                    
-                                }
+                                
+                                //Nave recebe item
+                                transfereItens(nave.slots, capsulaAtual->slots,i,true, nave.espacos_inventario);                                    
+                                
 
                                 e_pressed = false;
                                 button_current_time = button_time;
@@ -406,9 +407,9 @@ float itemInteract(
                         }
                     }
 
-                    selecionaItens(select_side,side,0,right_pressed,left_pressed, capsulaAtual->itens,button_current_time,button_time,i);                    
+                    selecionaItens(select_side,side,0,right_pressed,left_pressed, capsulaAtual->slots,button_current_time,button_time,i);                    
                                         
-                    renderItens(capsulaAtual->itens, select_side, side, 0,i,x_item, y_item, x_increment, y_increment, x_item_start, window);                    
+                    renderItens(capsulaAtual->slots, select_side, side, 0,i,x_item, y_item, x_increment, y_increment, x_item_start, window);                    
                 }
 
 
@@ -421,16 +422,16 @@ float itemInteract(
 
 
 
-                for (int i = 0; i < nave.itens.size(); i++) {
+                for (int i = 0; i < nave.slots.size(); i++) {
 
 
                     if (e_pressed && side == 1) {
                         if (select_side) {
 
-                            if (nave.itens.at(i)->selecionado) {
+                            if (nave.slots.at(i)->selecionado) {
 
                                 //Capsula recebe item
-                                transfereItens(capsulaAtual->itens, nave.itens, i);                                
+                                transfereItens(capsulaAtual->slots, nave.slots, i, false, 0);                                
 
                                 e_pressed = false;
                                 button_current_time = button_time;
@@ -445,9 +446,9 @@ float itemInteract(
                     }
 
 
-                    selecionaItens(select_side, side, 1,right_pressed, left_pressed, nave.itens, button_current_time, button_time, i);
+                    selecionaItens(select_side, side, 1,right_pressed, left_pressed, nave.slots, button_current_time, button_time, i);
                     
-                    renderItens(nave.itens, select_side, side, 1, i, x, y, x_increment, y_increment, x_start, window);                                        
+                    renderItens(nave.slots, select_side, side, 1, i, x, y, x_increment, y_increment, x_start, window);                                        
                 }
 
 
@@ -460,8 +461,7 @@ float itemInteract(
                     }
                     if (left_pressed) {
 
-                        side = 0;
-                        std::cout << side << "\n";
+                        side = 0;                        
                         left_pressed = false;
                         button_current_time = button_time;
                     }
@@ -480,50 +480,112 @@ float itemInteract(
 }
 
 
-void transfereItens(std::vector<std::shared_ptr<Item>>& itens1, std::vector<std::shared_ptr<Item>>& itens2, int& i) {
+void transfereItens(std::vector<std::shared_ptr<Slot>>& slots1, std::vector<std::shared_ptr<Slot>>& slots2, int& i, bool isNave, int espacos_inventario) {
 
-    
-    if (itens1.size() == 0) {
-        itens1.emplace_back(itens2.at(i)->returnItem(true));
+    bool limite = false;
+    if (slots1.size() == 0) {
+
+        auto slot = std::make_shared<Slot>(slots2.at(i)->font);
+
+        slot->itens.emplace_back(slots2.at(i)->itens.at(0)->returnItem(false));
+        slot->selecionado = true;
+        slot->empilhamento_max = slot->itens.at(0)->empilhamento_max;
+        slots1.emplace_back(slot);
+        limite = true;
     }
     else {
-        itens1.emplace_back(itens2.at(i)->returnItem(false));
+
+        auto item = slots2.at(i)->itens.at(0)->returnItem(false);
+        bool encontrou = false;
+
+        for (int j = 0; j < slots1.size(); j++) {
+
+            if (slots1.at(j)->itens.at(0)->id == item->id) {
+
+                if (slots1.at(j)->itens.size() < slots1.at(j)->empilhamento_max) {
+
+                    slots1.at(j)->itens.push_back(item);
+                    encontrou = true;
+                    j = slots1.size();
+                    limite = true;
+                }
+            }
+        }
+        if (!encontrou) {
+
+            if (isNave) {
+            
+                if (slots1.size() < espacos_inventario) {
+                    auto slot = std::make_shared<Slot>(slots2.at(i)->font);
+
+                    slot->itens.push_back(item);
+                    slot->selecionado = false;
+                    slot->empilhamento_max = slot->itens.at(0)->empilhamento_max;
+                    slots1.push_back(slot);
+                    limite = true;
+                }                
+            }
+            else {
+                auto slot = std::make_shared<Slot>(slots2.at(i)->font);
+
+                slot->itens.push_back(item);
+                slot->selecionado = false;
+                slot->empilhamento_max = slot->itens.at(0)->empilhamento_max;
+                slots1.push_back(slot);
+                limite = true;
+            }            
+        }        
+    }
+    
+    if (limite) {
+        slots2.at(i)->itens.erase(slots2.at(i)->itens.begin() + (slots2.at(i)->itens.size() - 1));
+
+        if (slots2.at(i)->itens.size() == 0) {
+            slots2.erase(slots2.begin() + i);
+        }
     }
     
 
-    itens2.erase(itens2.begin() + i);
 
-    if (itens2.size() > 0) {
-        if (i >= itens2.size()) {
-            itens2.at(i - 1)->selectItem();
+    if (slots2.size() > 0) {
+        if (i >= slots2.size()) {
+            slots2.at(i - 1)->itens.at(0)->selectItem();
+            slots2.at(i - 1)->selecionado = true;
         }
         else {
-            itens2.at(i)->selectItem();
+            slots2.at(i)->itens.at(0)->selectItem();
+            slots2.at(i)->selecionado = true;
         }
     }
 
-    if (i == itens2.size() && itens2.size() > 0) {
+    if (i == slots2.size() && slots2.size() > 0) {
         i -= 1;
     }
 }
 
 
 void selecionaItens(bool select_side, int side,int side_compare, bool& right_pressed, bool& left_pressed, 
-    std::vector<std::shared_ptr<Item>>& itens1, float& button_current_time, float button_time,int i) {
+    std::vector<std::shared_ptr<Slot>>& slots, float& button_current_time, float button_time,int i) {
 
     if (select_side && side == side_compare) {
 
         if (right_pressed) {
+            
+            if (slots.at(i)->selecionado) {
 
-            if (itens1.at(i)->selecionado) {
+                if (i + 1 < slots.size()) {
+                    slots.at(i)->itens.at(0)->deselectItem();
+                    slots.at(i)->selecionado = false;
 
-                if (i + 1 < itens1.size()) {
-                    itens1.at(i)->deselectItem();
-                    itens1.at(i + 1)->selectItem();
+                    slots.at(i + 1)->itens.at(0)->selectItem();
+                    slots.at(i + 1)->selecionado = true;
                 }
                 else {
-                    itens1.at(i)->deselectItem();
-                    itens1.at(0)->selectItem();
+                    slots.at(i)->itens.at(0)->deselectItem();
+                    slots.at(i)->selecionado = false;
+
+                    slots.at(0)->itens.at(0)->selectItem();
+                    slots.at(0)->selecionado = true;
                 }
 
                 right_pressed = false;
@@ -533,16 +595,22 @@ void selecionaItens(bool select_side, int side,int side_compare, bool& right_pre
 
 
         if (left_pressed) {
-
-            if (itens1.at(i)->selecionado) {
-
+            
+            if (slots.at(i)->selecionado) {
+            
                 if (i - 1 >= 0) {
-                    itens1.at(i)->deselectItem();
-                    itens1.at(i - 1)->selectItem();
+                    slots.at(i)->itens.at(0)->deselectItem();
+                    slots.at(i)->selecionado = false;
+
+                    slots.at(i - 1)->itens.at(0)->selectItem();
+                    slots.at(i - 1)->selecionado = true;
                 }
                 else {
-                    itens1.at(i)->deselectItem();
-                    itens1.at(itens1.size() - 1)->selectItem();
+                    slots.at(i)->itens.at(0)->deselectItem();
+                    slots.at(i)->selecionado = false;
+
+                    slots.at(slots.size() - 1)->itens.at(0)->selectItem();
+                    slots.at(slots.size() - 1)->selecionado = true;
                 }
 
                 left_pressed = false;
@@ -553,30 +621,44 @@ void selecionaItens(bool select_side, int side,int side_compare, bool& right_pre
 }
 
 
-void renderItens(std::vector<std::shared_ptr<Item>>& itens,bool select_side,int side,int side_compare,
-    int i,float& x, float& y,float x_increment, float y_increment,float x_start, std::shared_ptr <sf::RenderWindow>& window) {
+void renderItens(std::vector<std::shared_ptr<Slot>>& slots,
+    bool select_side,int side,int side_compare, int i,float& x, float& y,float x_increment, 
+    float y_increment, float x_start, std::shared_ptr <sf::RenderWindow>& window) {
 
-    if (itens.size() > 0) {
+    if (slots.size() > 0) {
 
         if (select_side && side == side_compare) {
-            if (itens.at(i)->selecionado) {
-                itens.at(i)->sprite->setTextureRect(sf::IntRect(152, 0, 152, 152));
+            if (slots.at(i)->selecionado) {
+                slots.at(i)->itens.at(0)->sprite->setTextureRect(sf::IntRect(152, 0, 152, 152));
             }
         }
         else {
-            if (itens.at(i)->selecionado) {
-                itens.at(i)->sprite->setTextureRect(sf::IntRect(0, 0, 152, 152));
+            if (slots.at(i)->selecionado) {
+                slots.at(i)->itens.at(0)->sprite->setTextureRect(sf::IntRect(0, 0, 152, 152));
             }
         }
 
         if (i != 0 && i % 3 == 0) {
-            y = y + itens.at(i)->sprite->getTexture()->getSize().y + y_increment;
+            y = y + slots.at(i)->itens.at(0)->sprite->getTexture()->getSize().y + y_increment;
             x = x_start;
         }
 
-        itens.at(i)->sprite->setPosition(x, y);
-        window->draw(*itens.at(i)->sprite);
+        slots.at(i)->itens.at(0)->sprite->setPosition(x, y);
+        
+        float x_quant = x + (slots.at(i)->itens.at(0)->sprite->getTexture()->getSize().x / 2) - (slots.at(i)->quant_sprite->getTexture()->getSize().x / 2);
+        float y_quant = y + (slots.at(i)->itens.at(0)->sprite->getTexture()->getSize().y) - (slots.at(i)->quant_sprite->getTexture()->getSize().y / 2);
+        
+        slots.at(i)->quant_sprite->setPosition(x_quant,y_quant);        
+        slots.at(i)->qtdItensText.setString(std::to_string(slots.at(i)->itens.size()));
+        slots.at(i)->qtdItensText.setFillColor(sf::Color::Black);
+        slots.at(i)->qtdItensText.setPosition(x_quant + (slots.at(i)->quant_sprite->getTexture()->getSize().x / 2) - 10, y_quant + (slots.at(i)->quant_sprite->getTexture()->getSize().y / 2) - 20);
 
-        x += itens.at(i)->sprite->getTexture()->getSize().x / 2 + x_increment;
+        
+
+        window->draw(*slots.at(i)->itens.at(0)->sprite);
+        window->draw(*slots.at(i)->quant_sprite);
+        window->draw(slots.at(i)->qtdItensText);
+
+        x += slots.at(i)->itens.at(0)->sprite->getTexture()->getSize().x / 2 + x_increment;
     }
 }

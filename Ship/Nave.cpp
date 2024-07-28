@@ -109,51 +109,64 @@ void Nave::load() {
 
     std::ifstream f("resources/arquivos/player.json");
     json data = json::parse(f);
+    font.loadFromFile("./resources/fonts/Minecraft.ttf");
 
-    if (data["player"].contains("itens") && data["player"]["itens"].is_array()) {
-        for (const auto& item_json : data["player"]["itens"]) {           
-          
-            try {
+    if (data["player"].contains("slots") && data["player"]["slots"].is_array()) {
 
-                int id = item_json.at("id").template get<int>();
-                float peso = item_json.at("peso").template get<float>();
-                std::string textura = item_json.at("textura").template get<std::string>();
-                int quantidade = 1;
+        for (const auto& slotJson : data["player"]["slots"]) {
 
-                auto item = std::make_shared<Item>(id,
-                    peso,
-                    quantidade,
-                    textura);
-                
+            auto slot = std::make_shared<Slot>(font);
 
 
-                if (item_json["tipo_item"]["id"].template get<int>() == 1) {
+            if (slotJson["itens"].is_array()) {
 
-                    auto melhoriaCasco = std::make_shared<MelhoriaCasco>();
-                    melhoriaCasco->load(item_json["item_real"]);
-                    item->itemReal = melhoriaCasco;
-                    itens.push_back(item);
-                }
-                else if (item_json["tipo_item"]["id"].template get<int>() == 2) {
+                for (const auto& item_json : slotJson["itens"]) {
 
-                    auto melhoriaMotor = std::make_shared<MelhoriaCasco>();
-                    melhoriaMotor->load(item_json["item_real"]);
-                    item->itemReal = melhoriaMotor;
-                    itens.push_back(item);
-                }
-                else if (item_json["tipo_item"]["id"].template get<int>() == 3) {
+                    int id = item_json.at("id").template get<int>();
+                    float peso = item_json.at("peso").template get<float>();
+                    int empilhamento_max = item_json.at("empilhamento_max").template get<int>();
+
+                    std::string textura = item_json.at("textura").template get<std::string>();
+                    int quantidade = 1;
+                    
+                    auto item = std::make_shared<Item>(id,
+                        peso,
+                        quantidade,
+                        textura,
+                        empilhamento_max);
 
 
+                    if (item_json["tipo_item"]["id"].template get<int>() == 1) {
+
+                        auto melhoriaCasco = std::make_shared<MelhoriaCasco>();
+                        melhoriaCasco->load(item_json["item_real"]);
+                        item->itemReal = melhoriaCasco;
+                        slot->itens.push_back(item);
+                    }
+                    else if (item_json["tipo_item"]["id"].template get<int>() == 2) {
+
+                        auto melhoriaMotor = std::make_shared<MelhoriaCasco>();
+                        melhoriaMotor->load(item_json["item_real"]);
+                        item->itemReal = melhoriaMotor;
+                        slot->itens.push_back(item);
+                    }
+                    else if (item_json["tipo_item"]["id"].template get<int>() == 3) {
+                    }
                 }
             }
-            catch (const std::exception& e) {
-                std::cerr << "Erro ao criar o item: " << e.what() << std::endl;
-            }                      
+
+            slot->empilhamento_max = slot->itens.at(0)->empilhamento_max;
+            slot->font = font;    
+            slot->selecionado = false;
+            slots.push_back(slot);
         }
     }
 
-
-    itens.at(0)->selecionado = true;
+    if (slots.size() > 0) {
+        slots.at(0)->selecionado = true;
+    }
+    
+    //itens.at(0)->selecionado = true;
 
 
     id = data["player"]["id"].template get<int>();

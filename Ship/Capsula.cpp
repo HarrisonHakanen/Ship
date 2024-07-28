@@ -13,6 +13,7 @@ Capsula::Capsula(std::string textura_, float rotacao_,sf::Vector2f posicao, std:
 	texture = std::make_shared<sf::Texture>();
 	sprite = std::make_shared<sf::Sprite>();
 	texture->loadFromFile("./resources/textures/"+textura);
+	font.loadFromFile("./resources/fonts/Minecraft.ttf");
 	sprite->setPosition(posicao);	
 	sprite->setTexture(*texture);
 
@@ -40,27 +41,52 @@ Capsula::Capsula(std::string textura_, float rotacao_,sf::Vector2f posicao, std:
 
 		int idTipoItem = idTipoItemInicio + (std::rand() % (idTipoItemFim - idTipoItemInicio + 1));
 
+		
 
 		for (int j = 0; j < itensCarregados.size(); j++) {
 
-			if (idTipoItem == itensCarregados.at(j)->id) {				
-				
 
+			if (idTipoItem == itensCarregados.at(j)->id) {				
+
+				
 				int quantidade = 1;
 
 				auto item = std::make_shared<Item>(itensCarregados.at(j)->id,
 					itensCarregados.at(j)->peso,
 					quantidade,
-					itensCarregados.at(j)->textura);
+					itensCarregados.at(j)->textura,
+					itensCarregados.at(j)->empilhamento_max);
 
-												
-				itens.emplace_back(item);
+				
+				bool itemIgual = false;
+				for (int k = 0; k < slots.size(); k++) {
+					if (slots.at(k)->itens.at(0)->id == itensCarregados.at(j)->id) {
+
+						if (slots.at(k)->itens.size() < slots.at(k)->empilhamento_max) {
+							itemIgual = true;
+							slots.at(k)->itens.emplace_back(item);
+							k = slots.size();
+						}						
+					}
+				}
+
+
+				if (!itemIgual) {
+
+					auto slot = std::make_shared<Slot>(font);
+					slot->selecionado = false;
+					slot->itens.push_back(item);
+					slot->empilhamento_max = slot->itens.at(0)->empilhamento_max;
+					slot->font = font;
+					slots.emplace_back(slot);
+				}
+								
 				j = itensCarregados.size();
 			}
 		}
 	}
 	
-	itens.at(0)->selectItem();
+	slots.at(0)->selecionado = true;
 }
 
 
