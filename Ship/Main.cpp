@@ -14,9 +14,15 @@
 float computeAngle(float ax, float ay, float bx, float by);
 void transfereItens(std::vector<std::shared_ptr<Slot>>& slots1, std::vector<std::shared_ptr<Slot>>& slots2, int& i,bool isNave, int espacos_inventario);
 void selecionaItens(bool select_side, int side, int side_compare, bool& right_pressed, bool& left_pressed, std::vector<std::shared_ptr<Slot>>& itens1, float& button_current_time, float button_time, int i);
+void controleCamera(Camera& camera, bool item_find, float maxDistance, sf::Vector2f nave_posicao, float nave_peso, std::vector<std::shared_ptr<Planeta>> planetas);
+void eventos(bool& pause, bool& inventarioOption, bool& item_find, bool& e_pressed, bool& left_pressed, bool& right_pressed, float e_button_current_time, std::shared_ptr<sf::RenderWindow>window);
 void renderItens(std::vector<std::shared_ptr<Slot>>& slots, 
     bool select_side, int side, int side_compare,int i, float& x, float& y, float x_increment, 
     float y_increment, float x_start, std::shared_ptr <sf::RenderWindow>& window);
+void distanciaItem(std::vector<std::shared_ptr<Capsula>>capsulas,
+    sf::Vector2f posicaoNave, float f_button_time, float f_button_decrease_time,
+    float& f_button_current_time, bool& f_pressed, bool& select_side, bool& item_find);
+
 
 float itemInteract(
     bool item_find,
@@ -34,6 +40,7 @@ float itemInteract(
     float button_time,
     float button_decrease_time
    );
+
 
 int main() {
 
@@ -72,6 +79,7 @@ int main() {
     sf::RectangleShape itemScreen(sf::Vector2f(1500.f, 800.f));
     itemScreen.setFillColor(sf::Color(100.f, 100.f, 100.f, 200.f));
     itemScreen.setOrigin(itemScreen.getSize() / 2.f);
+    
 
 
     // Criação do retângulo
@@ -97,15 +105,11 @@ int main() {
     float f_button_current_time = 0;
     float f_button_decrease_time = 0.07;
 
-    
-
-
     bool left_pressed = false;
     float left_button_current_time = 0;
    
     bool right_pressed = false;    
     float right_button_current_time = 0;    
-
 
     bool select_side = false;
     int side = 1;
@@ -117,38 +121,10 @@ int main() {
     
 	while (game.window->isOpen()) {
 
-
         game.setClock();
+        
 
-        sf::Event event{};
-
-        while (game.window->pollEvent(event)) {
-
-            if (event.type == sf::Event::Closed) {
-                game.window->close();
-            }
-
-            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Enter))
-            {                  
-                pause = !pause;
-            }
-
-            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::I))
-            {   
-                if (!pause) {
-                    inventarioOption = !inventarioOption;
-                }                
-            }
-
-            if (item_find) {                
-
-                if (e_button_current_time <= 0) {
-                    if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::E)) e_pressed = true;
-                }                
-                if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Left)) left_pressed = true;
-                if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Right)) right_pressed = true;
-            }
-        }
+        eventos(pause,inventarioOption,item_find,e_pressed,left_pressed,right_pressed,e_button_current_time,game.window);        
 
 
         if (!inventarioOption) {
@@ -171,103 +147,17 @@ int main() {
                 }
                 
 
-
-
                 //Verifica itens por perto e se foi interagido com o item
-
-                for (auto capsulaAtual : capsulas) {
-
-                    float distancia = sqrt(pow(nave.sprite->getPosition().x - capsulaAtual->sprite->getPosition().x, 2) + pow(nave.sprite->getPosition().y - capsulaAtual->sprite->getPosition().y, 2));
-
-                    if (distancia < 300) {
-
-
-                        if (f_button_current_time <= 0) {
-                            if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) f_pressed = true;
-                        }
-                        
-                        if (f_pressed)
-                        {           
-
-                            if (select_side) {
-                                select_side = false;
-                            }
-                            else {
-                                item_find = !item_find;
-                            }
-
-                            f_pressed = false;
-                            f_button_current_time = f_button_time;
-                            
-                        }
-
-
-                        capsulaAtual->showButton = true;
-                    }
-                    else {
-                        capsulaAtual->showButton = false;
-                    }                    
-                }
-
-                if (f_button_current_time > 0) {
-                    f_button_current_time = f_button_current_time - f_button_decrease_time;
-                }
+                distanciaItem(capsulas, nave.sprite->getPosition(), f_button_time, f_button_decrease_time,f_button_current_time,f_pressed,select_side,item_find);                
                 //------------------------------------------------------------------------------------------
-
 
 
                 //Gravidade entre nave e planetas e sistema de zoom automático
-                for (auto planeta : planetas) {
-
-                    float distancia = sqrt(pow(nave.sprite->getPosition().x - planeta->circle.getPosition().x, 2) + pow(nave.sprite->getPosition().y - planeta->circle.getPosition().y, 2));
-
-                    float forca_gravitacional = (planeta->gravidade / distancia) * nave.modeloNave.peso;
-
-
-                    if (distancia >= (maxDistance + (maxDistance * forca_gravitacional) * 5)) {
-
-                        //Aproxima
-                        if (camera.view.getSize().x >= camera.min_zoom && camera.view.getSize().y >= camera.min_zoom) {
-
-                            float newX = camera.view.getSize().x - (0.00003f * (distancia * 2));
-                            float newY = camera.view.getSize().y - (0.00003f * (distancia * 2));
-
-                            camera.view.setSize(newX, newY);
-                        }
-                    }
-                    else {
-
-                        //Afasta
-                        if (camera.view.getSize().x <= camera.max_zoom && camera.view.getSize().y <= camera.max_zoom) {
-
-                            float newX = camera.view.getSize().x + (0.0003f * (distancia * 2));
-                            float newY = camera.view.getSize().y + (0.0003f * (distancia * 2));
-
-                            camera.view.setSize(newX, newY);
-                        }
-                    }
-
-
-                    /*
-                    if (forca_gravitacional > 0.02) {
-
-                        float angulo = computeAngle(nave.sprite->getPosition().x, nave.sprite->getPosition().y, planeta->circle.getPosition().x, planeta->circle.getPosition().y);
-
-                        nave.x += cos(angulo) * forca_gravitacional;
-                        nave.y += sin(angulo) * forca_gravitacional;
-
-                        nave.sprite->setPosition(nave.x, nave.y);
-
-                    }
-                    */
-                }
-                //------------------------------------------------------------------------------------------
-
-                
+                controleCamera(camera, item_find, maxDistance, nave.sprite->getPosition(), nave.modeloNave.peso, planetas);                
+                //-----------------------------------------------------------------------------------------  
             }            
         }
         
-
 
 
         //Renderizações
@@ -305,25 +195,12 @@ int main() {
         }
 
 
-        itemInteract(
-            item_find,
-            game.window,
-            itemScreen,
-            selectScreen,
-            capsulas,
-            nave,
-            e_pressed,
-            select_side,
-            right_pressed,                
-            left_pressed,                
-            button_current_time,
-            side,
-            50,
-            0.05);
+        itemInteract(item_find,game.window,itemScreen,selectScreen,capsulas,nave,e_pressed,
+            select_side,right_pressed,left_pressed,button_current_time,side,50,0.05);
                 
-
-        game.window->display();
         
+
+        game.window->display();        
 	}
 
 
@@ -335,21 +212,11 @@ float computeAngle(float ax, float ay, float bx, float by) {
     return atan2((by - ay), (bx - ax));
 };
 
-float itemInteract(
-    bool item_find,
-    std::shared_ptr <sf::RenderWindow>& window,
-    sf::RectangleShape itemScreen,
-    sf::RectangleShape selectScreen,
-    std::vector<std::shared_ptr<Capsula>>capsulas,
-    Nave& nave,  
-    bool& e_pressed,
-    bool& select_side,
-    bool& right_pressed,
-    bool& left_pressed,
-    float& button_current_time,
-    int& side,
-    float button_time,
-    float button_decrease_time) {
+
+float itemInteract(bool item_find,std::shared_ptr <sf::RenderWindow>& window,sf::RectangleShape itemScreen,
+    sf::RectangleShape selectScreen,std::vector<std::shared_ptr<Capsula>>capsulas,Nave& nave,bool& e_pressed,
+    bool& select_side,bool& right_pressed,bool& left_pressed,float& button_current_time,int& side,
+    float button_time,float button_decrease_time) {
     
 
 
@@ -660,5 +527,143 @@ void renderItens(std::vector<std::shared_ptr<Slot>>& slots,
         window->draw(slots.at(i)->qtdItensText);
 
         x += slots.at(i)->itens.at(0)->sprite->getTexture()->getSize().x / 2 + x_increment;
+    }
+}
+
+
+void distanciaItem(std::vector<std::shared_ptr<Capsula>>capsulas,
+    sf::Vector2f posicaoNave,float f_button_time, float f_button_decrease_time,
+    float& f_button_current_time, bool& f_pressed,bool& select_side, bool& item_find) {
+
+
+    for (auto capsulaAtual : capsulas) {
+
+        float distancia = sqrt(pow(posicaoNave.x - capsulaAtual->sprite->getPosition().x, 2) + pow(posicaoNave.y - capsulaAtual->sprite->getPosition().y, 2));
+
+        if (distancia < 300) {
+
+
+            if (f_button_current_time <= 0) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) f_pressed = true;
+            }
+
+            if (f_pressed)
+            {
+
+                if (select_side) {
+                    select_side = false;
+                }
+                else {
+                    item_find = !item_find;
+                }
+
+                f_pressed = false;
+                f_button_current_time = f_button_time;
+
+            }
+
+
+            capsulaAtual->showButton = true;
+        }
+        else {
+            capsulaAtual->showButton = false;
+        }
+    }
+
+    if (f_button_current_time > 0) {
+        f_button_current_time = f_button_current_time - f_button_decrease_time;
+    }
+}
+
+
+void controleCamera(Camera& camera,bool item_find,float maxDistance,sf::Vector2f nave_posicao,float nave_peso, std::vector<std::shared_ptr<Planeta>> planetas) {
+
+    for (auto planeta : planetas) {
+
+        float distancia = sqrt(pow(nave_posicao.x - planeta->circle.getPosition().x, 2) + pow(nave_posicao.y - planeta->circle.getPosition().y, 2));
+
+        float forca_gravitacional = (planeta->gravidade / distancia) * nave_peso;
+
+        if (item_find) {
+            distancia = (maxDistance + (maxDistance * forca_gravitacional) * 5);
+        }
+
+        if (distancia >= (maxDistance + (maxDistance * forca_gravitacional) * 5)) {
+
+            //Aproxima
+            if (camera.view.getSize().x >= camera.min_zoom && camera.view.getSize().y >= camera.min_zoom) {
+
+                float newX = 0.f, newY = 0.f;
+
+                if (item_find) {
+                    newX = camera.view.getSize().x - (0.00009f * (distancia * 2));
+                    newY = camera.view.getSize().y - (0.00009f * (distancia * 2));
+                }
+                else {
+                    newX = camera.view.getSize().x - (0.00003f * (distancia * 2));
+                    newY = camera.view.getSize().y - (0.00003f * (distancia * 2));
+                }
+
+
+                camera.view.setSize(newX, newY);
+            }
+        }
+        else {
+
+            //Afasta
+            if (camera.view.getSize().x <= camera.max_zoom && camera.view.getSize().y <= camera.max_zoom) {
+
+                float newX = camera.view.getSize().x + (0.0003f * (distancia * 2));
+                float newY = camera.view.getSize().y + (0.0003f * (distancia * 2));
+
+                camera.view.setSize(newX, newY);
+
+            }
+        }
+
+
+        /*
+        if (forca_gravitacional > 0.02) {
+
+            float angulo = computeAngle(nave.sprite->getPosition().x, nave.sprite->getPosition().y, planeta->circle.getPosition().x, planeta->circle.getPosition().y);
+
+            nave.x += cos(angulo) * forca_gravitacional;
+            nave.y += sin(angulo) * forca_gravitacional;
+
+            nave.sprite->setPosition(nave.x, nave.y);
+
+        }
+        */
+    }
+}
+
+
+void eventos(bool& pause, bool& inventarioOption, bool& item_find, bool& e_pressed, bool& left_pressed, bool& right_pressed, float e_button_current_time, std::shared_ptr<sf::RenderWindow>window) {
+    sf::Event event{};
+
+    while (window->pollEvent(event)) {
+
+        if (event.type == sf::Event::Closed) {
+            window->close();
+        }
+
+        if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Enter))
+        {
+            pause = !pause;
+        }
+
+        if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::I))
+        {
+            if (!pause) {
+                inventarioOption = !inventarioOption;
+            }
+        }
+
+        if (item_find) {
+
+            if ((e_button_current_time <= 0) && (event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::E))  e_pressed = true;
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Left)) left_pressed = true;
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Right)) right_pressed = true;
+        }
     }
 }
